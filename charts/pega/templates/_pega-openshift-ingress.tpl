@@ -1,4 +1,5 @@
 {{- define "pega.openshift.ingress" -}}
+{{- if and (.node.ingress) (.node.ingress.enabled) }}
 # Route to be used for {{ .name }}
 kind: Route
 apiVersion: route.openshift.io/v1
@@ -23,4 +24,5 @@ spec:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
 ---
+{{- end }}
 {{- end }}

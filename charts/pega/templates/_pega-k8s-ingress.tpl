@@ -1,4 +1,5 @@
 {{- define "pega.k8s.ingress" -}}
+{{- if and (.node.ingress) (.node.ingress.enabled) }}
 # Ingress to be used for {{ .name }}
 kind: Ingress
 apiVersion: extensions/v1beta1
@@ -36,4 +37,5 @@ spec:
           serviceName: {{ .name }} 
           servicePort: {{ .node.service.port }}
 ---     
+{{- end }}
 {{- end }}

@@ -49,7 +49,15 @@ spec:
       serviceAccountName: {{ .custom.serviceAccountName }}
 {{- end }}
 {{- end }}
+{{- if .root.Values.global.cloudSqlProxy }}
+      serviceAccountName: {{ .root.Values.global.cloudSqlProxy.serviceAccountName }}
+{{- end }}
       volumes:
+{{- if .root.Values.global.cloudSqlProxy }}
+      - name: pega-sa-secret
+        secret:
+          secretName: {{ .root.Values.global.cloudSqlProxy.serviceAccountSecret }}
+{{- end }}
       # Volume used to mount config files.
       - name: {{ template "pegaVolumeConfig" }}
         configMap:
@@ -88,6 +96,20 @@ spec:
 {{- end }}
 {{- end }}
       containers:
+{{- if (.root.Values.global.cloudSqlProxy) }}
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.17
+        command:
+          - "/cloud_sql_proxy"
+          - "-instances={{ .root.Values.global.cloudSqlProxy.instances }}"
+          - "-credential_file=/secrets/service_account.json"
+        securityContext:
+          runAsNonRoot: true
+        volumeMounts:
+        - name: pega-sa-secret
+          mountPath: /secrets/
+          readOnly: true
+{{- end }}
       # Name of the container
       - name: pega-web-tomcat
         # The pega image, you may use the official pega distribution or you may extend

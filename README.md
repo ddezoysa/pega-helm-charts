@@ -1,3 +1,34 @@
+# Special Note
+
+This is an extension of [Pega Original Helm Charts](https://github.com/pegasystems/pega-helm-charts) with specific changes to deploy to GKE Private Deployments.
+Refer: `pega/values-gke.yaml` for more details.
+
+* Cloud SQL Proxy Support added with `global.cloudSqlProxy`
+```bash
+global:
+  cloudSqlProxy:
+    serviceAccountName: pega
+    serviceAccountSecret: pega-sa-secret
+    instances: <PROJECT>:<REGION>:<SQL_INSTANCE_NAME>=tcp:<PORT>
+```
+* Ability to customize the tier services with service `annotations` and `serviceType`.
+```bash
+      service:
+        annotations:
+          networking.gke.io/load-balancer-type: "Internal"
+        serviceType: LoadBalancer
+        port: 80
+        targetPort: 8080
+```
+* Ability to enable/disable ingress.
+```bash
+      ingress:
+        enabled: false
+```
+* Cassandra incubator helm chart packaged with in `pega/charts/cassandra`
+
+Refer: `pega/values-gke.yaml` for more details.
+
 # Pega deployment on Kubernetes
 
 This project provides Helm charts and basic examples for deploying Pega on Kubernetes. You will also need to download the required [installation kit](https://community.pega.com/knowledgebase/products/platform/deploy) from the Pega Community which includes rules and data to preload into your relational database. Deploying Pega on Kubernetes requires Pega Infinity 8.2 or newer.

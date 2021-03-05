@@ -26,11 +26,16 @@ metadata:
   annotations:
     cloud.google.com/neg: '{"ingress": true}'
     beta.cloud.google.com/backend-config: '{"ports": {"{{ .node.service.port }}": "{{ .name }}"}}'
+    {{ if (.node.service.annotations) }}
+{{- with .node.service.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+    {{ end }}
   {{ end }}
 {{- end }}
 spec:
   type:
-  {{- if or (eq .root.Values.global.provider "gke") (eq .root.Values.global.provider "eks") -}}
+  {{- if (eq .root.Values.global.provider "eks") -}}
   {{ indent 1 "NodePort" }}
   {{- else -}}
   {{ indent 1 (.node.service.serviceType | default "LoadBalancer") }}
